@@ -22,5 +22,7 @@
     "url": "https://github.com/northcoders/be-pg-themeparks/issues"
   },
   "homepage": "https://github.com/northcoders/be-pg-themeparks#readme",
-  "dependencies": {}
+  "dependencies": {
+    "pg": "^8.10.0"
+  }
 }

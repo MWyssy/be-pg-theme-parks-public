@@ -24,7 +24,13 @@ function seed() {
 
 function createParks() {
   /* Create your parks table in the query below */
-  return db.query('');
+  return db.query(
+    `CREATE TABLE parks (
+      park_id SERIAL PRIMARY KEY,
+      park_name VARCHAR(40) NOT NULL,
+      year_opened INT NOT NULL,
+      annual_attendance INT NOT NULL
+    )`);
 }
 
 module.exports = { seed };
