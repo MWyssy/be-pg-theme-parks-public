@@ -28,7 +28,8 @@ function seed() {
       return insertParks();
     })
     .then((parks) => {
-      return insertRides(parks);
+      const modifiedRides = modifyRidesData(rides, parks)
+      return insertRides(modifiedRides);
     })
 }
 
@@ -53,6 +54,7 @@ function createRides() {
     );`);
 }
 
+
 function arrangeParksData(parksData) {
   return parksData.map((park) => {
     return [park.park_name, park.year_opened, park.annual_attendance]
@@ -63,29 +65,37 @@ function insertParks() {
   const nestedArrOfValues = arrangeParksData(parks);
   const itemsInsertStr = format(
     `INSERT INTO parks
-      (park_name, year_opened, annual_attendance)
+    (park_name, year_opened, annual_attendance)
     VALUES
-      %L
+    %L
     RETURNING *;`,
     nestedArrOfValues
     );
     return db.query(itemsInsertStr).then((result) => {
       return result.rows
     });
-};
-
-function arrangeRidesData(ridesData, parkData) {
-  return ridesData.map((ride) => {
-    const parkName = parkData.find((park) => {
+  };
+  
+function modifyRidesData(ridesData, dataFromParksTable) {
+  const copyRidesData = [...ridesData];
+  return copyRidesData.map((ride) => {
+    const parkName = dataFromParksTable.find((park) => {
       return ride.park_name === park.park_name
     });
-    const park_id = parkName.park_id;
-    return [park_id, ride.ride_name, ride.year_opened, ride.votes]
+    ride.park_id = parkName.park_id;
+    delete ride.park_name;
+    return ride;
   });
 };
 
-function insertRides(parksFromDatabase) {
-  const nestedArrOfValues = arrangeRidesData(rides, parksFromDatabase);
+function arrangeRidesData(ridesData) {
+  return ridesData.map((ride) => {
+    return [ride.park_id, ride.ride_name, ride.year_opened, ride.votes]
+  });
+};
+
+function insertRides(modifiedRides) {
+  const nestedArrOfValues = arrangeRidesData(modifiedRides);
   const itemsInsertStr = format(
     `INSERT INTO rides
       (park_id, ride_name, year_opened, votes)
@@ -100,4 +110,4 @@ function insertRides(parksFromDatabase) {
 }
 
 
-module.exports = { seed, insertParks };
+module.exports = { seed, insertParks, insertRides };

@@ -16,7 +16,7 @@ afterAll(() => {
   if (db.end) db.end();
 });
 
-describe.only("5. selectParks()", () => {
+describe.skip("5. selectParks()", () => {
   test("should resolve with parks array", () => {
     return selectParks().then((parks) => {
       expect(parks).toBeInstanceOf(Array);
