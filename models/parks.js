@@ -30,10 +30,7 @@ exports.updateParkById = (id, updates) => {
 };
 
 exports.removeParkById = (id) => {
-    return db.query(`
-        DELETE FROM parks
-        WHERE park_id = ${id}
-    ;`)
+    return db.query('DELETE FROM parks WHERE park_id = $1;', [id])
     .then(() => {
         return;
     })
