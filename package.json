@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "app.js",
   "devDependencies": {
-    "jest": "^26.6.3"
+    "jest": "^26.6.3",
+    "pg-format": "^1.0.4"
   },
   "scripts": {
     "test": "PGDATABASE=theme_parks jest",
