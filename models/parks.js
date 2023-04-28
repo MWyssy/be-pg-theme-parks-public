@@ -29,4 +29,12 @@ exports.updateParkById = (id, updates) => {
     })
 };
 
-exports.removeParkById = () => {};
+exports.removeParkById = (id) => {
+    return db.query(`
+        DELETE FROM parks
+        WHERE park_id = ${id}
+    ;`)
+    .then(() => {
+        return;
+    })
+};

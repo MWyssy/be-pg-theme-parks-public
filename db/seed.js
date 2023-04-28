@@ -47,7 +47,7 @@ function createRides() {
   return db.query(
     `CREATE TABLE rides (
       ride_id SERIAL PRIMARY KEY,
-      park_id INT REFERENCES parks(park_id),
+      park_id INT REFERENCES parks(park_id) ON DELETE CASCADE,
       ride_name VARCHAR(40) NOT NULL,
       year_opened INT NOT NULL,
       votes INT DEFAULT 0
