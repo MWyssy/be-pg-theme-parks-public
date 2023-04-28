@@ -27,6 +27,9 @@ function seed() {
     .then(() => {
       return insertParks();
     })
+    .then((parks) => {
+      return insertRides(parks);
+    })
 }
 
 function createParks() {
@@ -45,22 +48,16 @@ function createRides() {
       ride_id SERIAL PRIMARY KEY,
       park_id INT REFERENCES parks(park_id),
       ride_name VARCHAR(40) NOT NULL,
-      year_opened DATE NOT NULL,
+      year_opened INT NOT NULL,
       votes INT DEFAULT 0
     );`);
 }
 
 function arrangeParksData(parksData) {
-  const result = [];
-  parksData.forEach((item) => {
-    const itemArr = [];
-    for (let key in item) {
-      itemArr.push(item[key])
-    }
-    result.push(itemArr)
-  })
-  return result;
-}
+  return parksData.map((park) => {
+    return [park.park_name, park.year_opened, park.annual_attendance]
+  });
+};
 
 function insertParks() {
   const nestedArrOfValues = arrangeParksData(parks);
@@ -73,8 +70,34 @@ function insertParks() {
     nestedArrOfValues
     );
     return db.query(itemsInsertStr).then((result) => {
-      console.log(result.rows)
+      return result.rows
     });
 };
 
-module.exports = { seed };
+function arrangeRidesData(ridesData, parkData) {
+  return ridesData.map((ride) => {
+    const parkName = parkData.find((park) => {
+      return ride.park_name === park.park_name
+    });
+    const park_id = parkName.park_id;
+    return [park_id, ride.ride_name, ride.year_opened]
+  });
+};
+
+function insertRides(parksFromDatabase) {
+  const nestedArrOfValues = arrangeRidesData(rides, parksFromDatabase);
+  const itemsInsertStr = format(
+    `INSERT INTO rides
+      (park_id, ride_name, year_opened)
+    VALUES
+      %L
+    RETURNING *;`,
+    nestedArrOfValues
+    );
+    return db.query(itemsInsertStr).then((result) => {
+      return result.rows
+    });
+}
+
+
+module.exports = { seed, insertParks };
