@@ -80,7 +80,7 @@ function arrangeRidesData(ridesData, parkData) {
       return ride.park_name === park.park_name
     });
     const park_id = parkName.park_id;
-    return [park_id, ride.ride_name, ride.year_opened]
+    return [park_id, ride.ride_name, ride.year_opened, ride.votes]
   });
 };
 
@@ -88,7 +88,7 @@ function insertRides(parksFromDatabase) {
   const nestedArrOfValues = arrangeRidesData(rides, parksFromDatabase);
   const itemsInsertStr = format(
     `INSERT INTO rides
-      (park_id, ride_name, year_opened)
+      (park_id, ride_name, year_opened, votes)
     VALUES
       %L
     RETURNING *;`,
