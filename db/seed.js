@@ -32,6 +32,15 @@ function seed() {
       const modifiedRides = prepareRidesData(rides, parks)
       return insertRides(modifiedRides);
     })
+    .then(() => {
+      return createStalls();
+    })
+    .then(() => {
+      return createFoods();
+    })
+    .then(() => {
+      return createStallsFoods();
+    })
 }
 
 function createParks() {
@@ -83,6 +92,35 @@ function insertRides(modifiedRides) {
     return db.query(itemsInsertStr).then((result) => {
       return result.rows
     });
+}
+
+function createStalls() {
+  return db.query(
+    `CREATE TABLE stalls (
+      stall_id SERIAL PRIMARY KEY,
+      park_id INT REFERENCES parks(park_id) ON DELETE CASCADE,
+      food_served text[]
+    );`);
+}
+
+function createFoods() {
+  return db.query(`
+    CREATE TABLE foods (
+      food_id SERIAL PRIMARY KEY,
+      food_name VARCHAR(40) NOT NULL,
+      vegan_option BOOLEAN NOT NULL
+    )
+  ;`)
+}
+
+function createStallsFoods() {
+  return db.query(`
+    CREATE TABLE stalls_foods (
+      stall_food_id SERIAL PRIMARY KEY,
+      food_id INT REFERENCES foods(food_id) ON DELETE CASCADE,
+      stall_id INT REFERENCES stalls(stall_id) ON DELETE CASCADE
+    )
+  ;`)
 }
 
 
